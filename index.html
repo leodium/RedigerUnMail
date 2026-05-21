@@ -450,10 +450,12 @@ status.textContent="❌ email invalide";
 return;
 }
 
-if(objet !== currentMission.text){
+const objetOk = objet.includes(currentMission.text);
+
+if(!objetOk){
 
 document.getElementById("objectHelp").textContent=
-"⚠️ Objet exact : "+currentMission.text;
+"⚠️ L'objet doit contenir : "+currentMission.text;
 
 status.textContent="❌ objet incorrect";
 return;
