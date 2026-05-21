@@ -66,7 +66,12 @@ border:2px solid var(--success);
 /* LAYOUT */
 .container{display:flex;}
 .main{flex:1;padding:16px;}
-.debug{width:300px;background:#fff;padding:16px;border-left:3px solid var(--primary);}
+.debug{
+width:300px;
+background:#fff;
+padding:16px;
+border-left:3px solid var(--primary);
+}
 
 /* FORM */
 .card{
@@ -76,7 +81,11 @@ border-radius:14px;
 box-shadow:var(--shadow);
 }
 
-label{display:block;margin-top:10px;font-weight:bold;}
+label{
+display:block;
+margin-top:10px;
+font-weight:bold;
+}
 
 input,textarea{
 width:100%;
@@ -98,9 +107,14 @@ border-radius:10px;
 cursor:pointer;
 }
 
-button:hover{background:var(--primary-dark);}
+button:hover{
+background:var(--primary-dark);
+}
 
-#status{margin-top:10px;font-weight:bold;}
+#status{
+margin-top:10px;
+font-weight:bold;
+}
 
 /* HELP */
 .help{
@@ -138,7 +152,9 @@ flex-direction:column;
 z-index:30;
 }
 
-.inbox-panel.open{right:0;}
+.inbox-panel.open{
+right:0;
+}
 
 .inbox-header{
 display:flex;
@@ -164,7 +180,9 @@ padding:10px 0;
 100%{transform:scale(1);}
 }
 
-.mail.pop{animation:pop 0.3s ease;}
+.mail.pop{
+animation:pop 0.3s ease;
+}
 
 .overlay{
 position:fixed;
@@ -251,7 +269,7 @@ color:#888;
 <script>
 
 /* =========================
-   THÈMES (VOCABULAIRE ENRICHI)
+   THÈMES
 ========================= */
 
 const missionsData=[
@@ -275,10 +293,10 @@ const missionsData=[
 ];
 
 const people=[
-{name:"Emma",avatar:"E",color:"#4fa3ff"},
-{name:"Lucas",avatar:"L",color:"#6c8cff"},
-{name:"Lina",avatar:"L",color:"#ff6fa8"},
-{name:"Noah",avatar:"N",color:"#00b894"}
+{name:"Emma"},
+{name:"Lucas"},
+{name:"Lina"},
+{name:"Noah"}
 ];
 
 const domains=["ecole.be","classe.be","cour.be","bureau.be"];
@@ -317,7 +335,12 @@ missions=[...missionsData]
 .slice(0,4)
 .map(m=>{
 const p=people[Math.floor(Math.random()*people.length)];
-return {...m,person:p,email:randomEmail(p),done:false};
+return {
+...m,
+person:p,
+email:randomEmail(p),
+done:false
+};
 });
 
 selectMission(missions[0].text);
@@ -325,15 +348,21 @@ render();
 }
 
 function render(){
+
 document.getElementById("missionBox").innerHTML =
 missions.map(m=>`
 <div class="mission ${m===currentMission?'active':''} ${m.done?'done':''}"
 onclick="selectMission('${m.text}')">
+
 ${m.done?'✔':'🎯'} ${m.text}<br>
+
 👤 ${m.person.name}<br>
-📧 <small>${m.person.name}@${domains[0]}</small>
+
+📧 <small>${m.email.toLowerCase()}</small>
+
 </div>
 `).join("");
+
 }
 
 function selectMission(text){
@@ -349,22 +378,32 @@ document.getElementById("objectHelp").textContent="";
 document.getElementById("messageHelp").textContent="";
 
 document.getElementById("activeMission").textContent="Mission actuelle : "+text;
-document.getElementById("missionTitle").textContent="🎯 Mission du jour : écrire un message simple sur "+text;
 
-document.getElementById("objectHelp").textContent="💡 Objet = mot exact : "+currentMission.text;
-document.getElementById("messageHelp").textContent="✏️ Mots possibles : "+currentMission.value.join(", ");
+document.getElementById("missionTitle").textContent=
+"🎯 Mission du jour : écrire un message simple sur "+text;
+
+document.getElementById("objectHelp").textContent=
+"💡 Objet exact : "+currentMission.text;
+
+document.getElementById("messageHelp").textContent=
+"✏️ Mots possibles : "+currentMission.value.join(", ");
 
 render();
 }
 
 function analyzeMessage(msg){
-if(!/[.!?]/.test(msg))
+
+if(!/[.!?]/.test(msg)){
 return {ok:false,reason:"❌ Mets un point"};
+}
 
 const t=msg.toLowerCase();
+
 const ok=currentMission.value.some(w=>t.includes(w));
 
-return ok?{ok:true}:{ok:false,reason:"❌ Mot manquant"};
+return ok
+? {ok:true}
+: {ok:false,reason:"❌ Mot manquant"};
 }
 
 function openInbox(){
@@ -378,51 +417,74 @@ document.getElementById("overlay").classList.remove("open");
 }
 
 function updateInbox(){
+
 document.getElementById("inbox").innerHTML =
-inbox.length?
-inbox.map((m,i)=>`
+inbox.length
+? inbox.map((m,i)=>`
 <div class="mail ${i===0?'pop':''}">
 <b>${m.from}</b><br>
 📌 ${m.objet}<br>
 ${m.message}
-</div>`).join("")
-:"Aucun message.";
+</div>
+`).join("")
+: "Aucun message.";
 }
 
 function send(){
 
-const email=document.getElementById("email").value.trim();
-const objet=document.getElementById("objet").value.trim();
+const email=document.getElementById("email").value.trim().toLowerCase();
+
+const objet=document.getElementById("objet").value.trim().toLowerCase();
+
 const msg=document.getElementById("message").value.trim();
+
 const status=document.getElementById("status");
 
-if(!email||!objet||!msg){status.textContent="❌ champs manquants";return;}
-if(!isValidEmail(email)){status.textContent="❌ email invalide";return;}
+if(!email || !objet || !msg){
+status.textContent="❌ champs manquants";
+return;
+}
 
-if(objet.trim().toLowerCase()!==currentMission.text){
-document.getElementById("objectHelp").textContent="⚠️ Objet exact : "+currentMission.text;
+if(!isValidEmail(email)){
+status.textContent="❌ email invalide";
+return;
+}
+
+if(objet !== currentMission.text){
+
+document.getElementById("objectHelp").textContent=
+"⚠️ Objet exact : "+currentMission.text;
+
 status.textContent="❌ objet incorrect";
 return;
 }
 
 const res=analyzeMessage(msg);
-document.getElementById("debugBox").textContent=res.reason;
+
+document.getElementById("debugBox").textContent=
+res.reason || "✔ Analyse correcte";
 
 if(!res.ok){
+
 status.textContent=res.reason;
-document.getElementById("messageHelp").textContent="💡 Mots possibles : "+currentMission.value.join(", ");
+
+document.getElementById("messageHelp").textContent=
+"💡 Mots possibles : "+currentMission.value.join(", ");
+
 return;
 }
 
-if(email!==currentMission.email){
+if(email !== currentMission.email.toLowerCase()){
 status.textContent="❌ email incorrect";
 return;
 }
 
 currentMission.done=true;
+
 render();
 
 const replies=replyBank[currentMission.text];
+
 const reply=replies[Math.floor(Math.random()*replies.length)];
 
 inbox.unshift({
@@ -432,6 +494,7 @@ message:reply
 });
 
 updateInbox();
+
 openInbox();
 
 status.textContent="✔ Message envoyé";
